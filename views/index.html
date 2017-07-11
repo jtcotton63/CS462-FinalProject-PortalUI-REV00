@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Imports -->
+        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
+        
+        <!-- Scripts -->
+        <script>
+            var app = angular.module('IndexApp',['ngCookies']);
+            app.controller('IndexCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies) {
+                    $scope.urlUserSvc = 'http://localhost:8080/services/user';
+
+                    $scope.user = null;
+                    $scope.getUserDetails = function() {
+                        var userIdString = $cookies.get('userId');
+                        var userId = parseInt(userIdString);
+                        $http({
+                            method: 'GET',
+                            url: $scope.urlUserSvc + '/users/' +  userId
+                        }).then(
+                                function success(response) {
+                                    console.log('User data received');
+                                    console.log(response.data);
+                                    return response.data;
+                                }
+                        );
+                    };
+                    
+                    $scope.title = 'Index page';
+                    
+                    angular.element(document).ready(function () {
+                        $scope.user = $scope.getUserDetails();
+                        console.log($scope.user);
+                    });
+            }]);
+        </script>
+        
+        <!-- Style -->
+        <style>
+            body    { padding-top:50px; }
+        </style>
+        
+    </head>
+    <body ng-app="IndexApp" class="container">
+        <div ng-controller="IndexCtrl" class="jumbotron">
+            <h1>{{title}}</h1>
+        </div>
+    </body>
+</html>

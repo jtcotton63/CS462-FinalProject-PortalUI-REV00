@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Imports -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        
+        <!-- Style -->
+        <style>
+            body    { padding-top:50px; }
+        </style>
+        
+    </head>
+    <body class="container">
+        <main>
+            <div class="jumbotron">
+                <h2>Login or Register</h2>
+                <p>If you don't already have an account, a new account will be automatically created</p>
+                <form action="/authenticate" method="post">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username">
+                    <br>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password">
+                    <br>
+                    <br>
+                    <input type="submit" value="  Login  ">
+                </form>
+            </div>
+        </main>
+    </body>
+</html>
