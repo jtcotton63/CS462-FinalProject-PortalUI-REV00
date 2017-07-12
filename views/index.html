@@ -16,6 +16,7 @@
             var app = angular.module('IndexApp',['ngCookies']);
             app.controller('IndexCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies) {
                     $scope.urlUserSvc = 'http://localhost:8080/services/user';
+                    $scope.urlJobSvc = 'http://localhost:8080/services/job';
 
                     $scope.user = null;
                     $scope.getUserDetails = function() {
@@ -35,9 +36,35 @@
                     
                     $scope.title = 'Index page';
                     
+                    $scope.content = null;
+                    $scope.displayIndex = null;
+                    $scope.isDisplayLeftArrow = null;
+                    $scope.isDisplayRightArrow = null;
+                    $scope.contentSize = 20;
+                    $scope.getJobs = function(index) {
+                        var pageIndex = index + 1;
+                        $http({
+                            method: 'GET',
+                            url: $scope.urlJobSvc + '/jobs?page=' +  pageIndex + '&size=' + $scope.contentSize
+                        }).then(
+                                function success(response) {
+                                    console.log('Job data received page ' + pageIndex + ' size ' + $scope.contentSize);
+                                    var data = response.data;
+                                    console.log(data);
+                                    
+                                    $scope.content = data.content;
+                                    var tempDisplayNumber = data.number + 1;
+                                    $scope.displayIndex = tempDisplayNumber;
+                                    $scope.isDisplayLeftArrow = !data.first;
+                                    $scope.isDisplayRightArrow = !data.last;
+                                }
+                        );
+                    };
+                    
                     angular.element(document).ready(function () {
                         $scope.user = $scope.getUserDetails();
                         console.log($scope.user);
+                        $scope.getJobs(0);
                     });
             }]);
         </script>
@@ -51,6 +78,9 @@
     <body ng-app="IndexApp" class="container">
         <div ng-controller="IndexCtrl" class="jumbotron">
             <h1>{{title}}</h1>
+            <div ng-repeat="c in content">
+                {{c.id}}, {{c.address}}
+            </div>
         </div>
     </body>
 </html>

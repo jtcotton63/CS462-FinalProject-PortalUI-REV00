@@ -7,6 +7,7 @@ var fs = require('fs');
 
 // 
 var app = express();
+var jobService = require('./service/JobService');
 var userService = require('./service/UserService');
 
 
@@ -24,6 +25,7 @@ app.use(cookieParser());
 var router = express.Router();
 
 // Standard routes
+
 router.get('/', function(req, res) {
     // Determine if they have a cookie
     var userIdCookie = req.cookies.userId;
@@ -63,7 +65,20 @@ router.get('/logout', function(req, res) {
     res.redirect('/login');
 });
 
+
+
+// Job service calls
+
+router.get('/services/job/jobs', function(req, res) {
+    jobService.getJobs(req, res, function(req, res, data) {
+       res.json(data);
+    });
+});
+
+
+
 // User service calls
+
 router.get('/services/user/users/:userId', function(req, res) {
     var userId = req.params.userId;
     userService.getUserById(req, res, userId, function(req, res, data) {
