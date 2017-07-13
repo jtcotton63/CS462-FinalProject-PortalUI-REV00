@@ -34,7 +34,7 @@
                         );
                     };
                     
-                    $scope.title = 'Index page';
+                    $scope.title = 'Current Jobs';
                     
                     $scope.content = null;
                     $scope.displayIndex = null;
@@ -71,13 +71,31 @@
         
         <!-- Style -->
         <style>
-            body    { padding-top:50px; }
+            body { 
+                padding: 40px;
+            }
+            
+            h1 {
+                padding-bottom: 25px;
+            }
         </style>
         
     </head>
     <body ng-app="IndexApp" class="container">
+        
+        <nav class="navbar navbar-primary">
+            <div class="container-fluid">
+                <div class="nav navbar-nav">
+                    <li><a href="/">Jobs</a></li>
+                    <li><a href="/helpers">Helpers</a></li>
+                </div>
+            </div>
+        </nav>
+        
         <div ng-controller="IndexCtrl" class="jumbotron">
-            <h1>{{title}}</h1>
+            <div class="text-center">
+                <h1>{{title}}</h1>
+            </div>
             
             <table class="table table-bordered table-striped">
                 <thead class="thead-inverse">
