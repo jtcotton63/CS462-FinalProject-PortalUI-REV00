@@ -40,8 +40,6 @@ router.get('/', function(req, res) {
 
 router.post('/authenticate', function(req, res) {
     userService.authenticate(req, res, function(req, res, data) {
-        console.log('Authenticated returned data: ' + JSON.stringify(data));
-        
         if(data.authenticated === true) {
             var id = data.userId;
             res.cookie("userId", id);

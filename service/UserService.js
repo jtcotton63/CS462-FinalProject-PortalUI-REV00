@@ -18,7 +18,6 @@ exports.authenticate = function(req, res, callback) {
         });
         response.on('end', function() {
            var data = JSON.parse(dataString);
-           console.log('On data end: ' + dataString);
            callback(req, res, data);
         });
     });
@@ -47,7 +46,6 @@ exports.getUserById = function(req, res, userId, callback) {
         });
         response.on('end', function() {
            var data = JSON.parse(dataString);
-           console.log('On data end: ' + dataString);
            callback(req, res, data);
         });
     });

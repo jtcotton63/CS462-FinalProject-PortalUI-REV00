@@ -78,9 +78,39 @@
     <body ng-app="IndexApp" class="container">
         <div ng-controller="IndexCtrl" class="jumbotron">
             <h1>{{title}}</h1>
-            <div ng-repeat="c in content">
-                {{c.id}}, {{c.address}}
-            </div>
+            
+            <table class="table table-bordered table-striped">
+                <thead class="thead-inverse">
+                    <tr>
+                        <th>ID</th>
+                        <th>Address</th>
+                        <th>Description</th>
+                        <th>Job Time</th>
+                        <th>Rendezvous Time</th>
+                        <th>Accepted By</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    
+                    <tr ng-repeat="c in content">
+                        <td>{{c.id}}</td>
+                        <td>{{c.address}}</td>
+                        <td>{{c.description}}</td>
+                        <td>{{c.jobTime | date: 'd MMM @ h:m a'}}</td>
+                        <td>{{c.rendevousTime | date: 'd MMM @ h:m a'}}</td>
+                        <td>{{c.acceptedBy || "None"}}</td>
+                        <td class="text-center"><p><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
+                        <td class="text-center"><p><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+                    </tr>
+                    
+                </tbody>
+                
+                
+                
+            </table>
         </div>
     </body>
 </html>
