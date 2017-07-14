@@ -5,19 +5,28 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
+        
+        
         <!-- Imports -->
         <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
+        <script src="https://rawgit.com/dwmkerr/angular-modal-service/master/dst/angular-modal-service.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
         
+                
         <!-- Scripts -->
         <script>
-            var app = angular.module('IndexApp',['ngCookies']);
-            app.controller('IndexCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies) {
+            var app = angular.module('IndexApp',['ngCookies', 'angularModalService']);
+
+    
+    
+            app.controller('IndexCtrl', ['$scope', '$http', '$cookies', 'ModalService', function($scope, $http, $cookies, ModalService) {
                     $scope.urlUserSvc = 'http://localhost:8080/services/user';
                     $scope.urlJobSvc = 'http://localhost:8080/services/job';
-
+                    
                     $scope.user = null;
                     $scope.getUserDetails = function() {
                         var userIdString = $cookies.get('userId');
@@ -36,7 +45,7 @@
                     
                     $scope.title = 'Current Jobs';
                     
-                    $scope.content = null;
+                    $scope.jobs = null;
                     $scope.displayIndex = null;
                     $scope.isDisplayLeftArrow = null;
                     $scope.isDisplayRightArrow = null;
@@ -52,7 +61,7 @@
                                     var data = response.data;
                                     console.log(data);
                                     
-                                    $scope.content = data.content;
+                                    $scope.jobs = data.content;
                                     var tempDisplayNumber = data.number + 1;
                                     $scope.displayIndex = tempDisplayNumber;
                                     $scope.isDisplayLeftArrow = !data.first;
@@ -61,13 +70,42 @@
                         );
                     };
                     
+                    $scope.edit = function(job) {
+                        ModalService.showModal({
+                            templateUrl: 'edit_modal.html',
+                            controller: "EditModalController",
+                            inputs: {
+                                job: job
+                            }
+                        }).then(function(modal) {
+                            modal.element.modal();
+                            modal.close.then(function(result) {
+                                console.log(result);
+                            });
+                        });
+                    };
+                    
                     angular.element(document).ready(function () {
                         $scope.user = $scope.getUserDetails();
-                        console.log($scope.user);
                         $scope.getJobs(0);
                     });
             }]);
+        
+        
+        
+            app.controller('EditModalController', ['$scope', 'job', 'close', function($scope, job, close) {
+                    $scope.job = job;
+                    console.log($scope.job);
+                    $scope.close = function(result) {
+                        close(result, 500);
+                    };
+            }]);
+        
+        
+        
         </script>
+        
+        
         
         <!-- Style -->
         <style>
@@ -79,6 +117,8 @@
                 padding-bottom: 25px;
             }
         </style>
+        
+        
         
     </head>
     <body ng-app="IndexApp" class="container">
@@ -113,22 +153,46 @@
                 
                 <tbody>
                     
-                    <tr ng-repeat="c in content">
-                        <td>{{c.id}}</td>
-                        <td>{{c.address}}</td>
-                        <td>{{c.description}}</td>
-                        <td>{{c.jobTime | date: 'd MMM @ h:m a'}}</td>
-                        <td>{{c.rendevousTime | date: 'd MMM @ h:m a'}}</td>
-                        <td>{{c.acceptedBy || "None"}}</td>
-                        <td class="text-center"><p><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
+                    <tr ng-repeat="job in jobs">
+                        <td>{{job.id}}</td>
+                        <td>{{job.address}}</td>
+                        <td>{{job.description}}</td>
+                        <td>{{job.jobTime | date: 'd MMM @ h:m a'}}</td>
+                        <td>{{job.rendevousTime | date: 'd MMM @ h:m a'}}</td>
+                        <td>{{job.acceptedBy || "None"}}</td>
+                        <td class="text-center"><p><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
                         <td class="text-center"><p><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
                     </tr>
                     
                 </tbody>
                 
-                
-                
             </table>
         </div>
+        
+        
+        
+        <!-- Edit Job Modal -->
+        <script type="text/ng-template" id="edit_modal.html">
+            <div class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" ng-click="close('Cancel')" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Yes or No?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{job.address}}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" ng-click="close('Yes')" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+        
+        
+        
     </body>
+    
 </html>
