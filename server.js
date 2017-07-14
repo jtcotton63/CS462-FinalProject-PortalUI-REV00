@@ -73,6 +73,13 @@ router.get('/services/job/jobs', function(req, res) {
     });
 });
 
+router.put('/services/job/jobs/:jobId', function(req, res) {
+    var jobId = req.params.jobId;
+    jobService.updateJob(req, res, jobId, function(req, res, data) {
+       res.json(data);
+    });
+});
+
 
 
 // User service calls
