@@ -43,8 +43,6 @@
                         );
                     };
                     
-                    $scope.title = 'Current Jobs';
-                    
                     $scope.jobs = null;
                     $scope.displayIndex = null;
                     $scope.isDisplayLeftArrow = null;
@@ -127,15 +125,25 @@
         <!-- Style -->
         <style>
             body { 
-                padding: 40px;
+                background: gray;
             }
             
-            h1 {
-                padding-bottom: 25px;
+            h3 {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: normal;
+                width: 75%;
+                padding-top: 8px;
+                font-weight: bold;
             }
             
             .modal-body {
                 margin: 10px;
+            }
+            
+            .navbar {
+                background: #F9F9F9;
             }
         </style>
         
@@ -154,42 +162,45 @@
             </div>
         </nav>
         
-        <div ng-controller="IndexCtrl" class="jumbotron">
-            <div class="text-center">
-                <h1>{{title}}</h1>
+        <div ng-controller="IndexCtrl">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title pull-left">Current Jobs</h3>
+                    <button class="btn btn-success pull-right"><span class="glyphicon glyphicon-plus"></span></button>
+                    <div class="clearfix"></div>
+                </div>
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>ID</th>
+                            <th>Address</th>
+                            <th>Description</th>
+                            <th>Job Time</th>
+                            <th>Accepted By</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr ng-repeat="job in jobs">
+                            <td>{{job.id}}</td>
+                            <td>{{job.address}}</td>
+                            <td>{{job.description}}</td>
+                            <td>{{job.jobTime | date: 'd MMM @ h:m a'}}</td>
+                            <td>{{job.acceptedBy || "None"}}</td>
+                            <td class="text-center"><p><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
+                            <td class="text-center"><p><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
             </div>
-            
-            <table class="table table-bordered table-striped">
-                <thead class="thead-inverse">
-                    <tr>
-                        <th>ID</th>
-                        <th>Address</th>
-                        <th>Description</th>
-                        <th>Job Time</th>
-                        <th>Accepted By</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-                
-                <tbody>
-                    
-                    <tr ng-repeat="job in jobs">
-                        <td>{{job.id}}</td>
-                        <td>{{job.address}}</td>
-                        <td>{{job.description}}</td>
-                        <td>{{job.jobTime | date: 'd MMM @ h:m a'}}</td>
-                        <td>{{job.acceptedBy || "None"}}</td>
-                        <td class="text-center"><p><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                        <td class="text-center"><p><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
-                    </tr>
-                    
-                </tbody>
-                
-            </table>
         </div>
-        
-        
+            
+
         
         <!-- Edit Job Modal -->
         <script type="text/ng-template" id="edit_modal.html">
