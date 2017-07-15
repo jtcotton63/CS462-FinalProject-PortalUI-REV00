@@ -165,7 +165,6 @@
                         <th>Address</th>
                         <th>Description</th>
                         <th>Job Time</th>
-                        <th>Rendezvous Time</th>
                         <th>Accepted By</th>
                         <th>Edit</th>
                         <th>Delete</th>
@@ -179,7 +178,6 @@
                         <td>{{job.address}}</td>
                         <td>{{job.description}}</td>
                         <td>{{job.jobTime | date: 'd MMM @ h:m a'}}</td>
-                        <td>{{job.rendevousTime | date: 'd MMM @ h:m a'}}</td>
                         <td>{{job.acceptedBy || "None"}}</td>
                         <td class="text-center"><p><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
                         <td class="text-center"><p><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
