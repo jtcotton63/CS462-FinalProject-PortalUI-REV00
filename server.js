@@ -63,6 +63,28 @@ router.get('/logout', function(req, res) {
     res.redirect('/login');
 });
 
+router.get('/users', function(req, res) {
+    // Determine if they have a cookie
+    var userIdCookie = req.cookies.userId;
+    if(userIdCookie === undefined) {
+        res.redirect('/login');
+    }
+    
+    else {
+        
+        // Make sure they have admin priviledges
+        userService.getUserById(req, res, userIdCookie, function(req, res, user) {
+            userService.isAdmin(user, function(result) {
+                console.log(result);
+                if(result === true)
+                    res.sendFile(__dirname + '/views/users.html');
+                else
+                    res.redirect('/');
+            });
+         });
+    }
+});
+
 
 
 // Job service calls

@@ -52,3 +52,15 @@ exports.getUserById = function(req, res, userId, callback) {
         });
     });
 };
+
+exports.isAdmin = function(user, callback) {
+    if(!user)
+        callback(false);
+    
+    var userTypeId = user.role.id;
+    if(userTypeId === 1)
+        callback(true);
+    
+    else
+        callback(false);
+};
