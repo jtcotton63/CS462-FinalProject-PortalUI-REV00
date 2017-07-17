@@ -68,16 +68,44 @@
                         );
                     };
                     
+                    
+                    
+                    // Resource requests
+                    
+                    $scope.createJob = function(newJob) {
+                        $scope.submitJobInformationChange('POST', '/jobs', newJob);
+                    };
+                    
                     $scope.updateJob = function(updatedJob) {
+                        $scope.submitJobInformationChange('PUT', '/jobs/' + updatedJob.id, updatedJob);
+                    };
+                    
+                    $scope.submitJobInformationChange = function(method, path, job) {
                         $http({
-                            method: 'PUT',
-                            url: $scope.urlJobSvc + '/jobs/' + updatedJob.id,
-                            data: updatedJob
+                            method: method,
+                            url: $scope.urlJobSvc + path,
+                            data: job
                         }).then(
                                 function success(response) {
                                     $scope.getJobs(0);
                                 }
                         );
+                    };
+                    
+                    
+                    
+                    // Modal invocations
+                    
+                    $scope.create = function() {
+                        $scope.invokeEditJobModal('Create Job', null, function(result) {
+                            $scope.createJob(result);
+                        });
+                    };
+                    
+                    $scope.edit = function(job) {
+                        $scope.invokeEditJobModal('Edit Job', job, function(result) {
+                            $scope.updateJob(result);
+                        });
                     };
                     
                     $scope.invokeEditJobModal = function(title, job, successCb) {
@@ -102,12 +130,6 @@
                         });
                     };
                     
-                    $scope.edit = function(job) {
-                        $scope.invokeEditJobModal('Edit Job', job, function(result) {
-                            $scope.updateJob(result);
-                        });
-                    };
-                    
                     angular.element(document).ready(function () {
                         $scope.user = $scope.getUserDetails();
                         $scope.getJobs(0);
@@ -117,10 +139,20 @@
         
         
             app.controller('EditModalController', ['$scope', 'job', 'title', 'close', function($scope, job, title, close) {
+                    // Make date time displayable in modal
+                    $scope.displayJobTime = (job && job.jobTime) ? new Date(job.jobTime) : new Date();
+                    $scope.displayJobTime.setSeconds(0);
+                    $scope.displayJobTime.setMilliseconds(0);
+                    console.log($scope.displayJobTime);        
+            
                     $scope.job = job;
                     $scope.title = title;
+                    
                     console.log($scope.job);
                     $scope.close = function(job) {
+                        if(job)
+                            job.jobTime = $scope.displayJobTime.toISOString();
+                        
                         close(job, 500);
                     };
             }]);
@@ -175,7 +207,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title pull-left">Current Jobs</h3>
-                    <button class="btn btn-success pull-right"><span class="glyphicon glyphicon-plus"></span></button>
+                    <button class="btn btn-success pull-right" ng-click="create()"><span class="glyphicon glyphicon-plus"></span></button>
                     <div class="clearfix"></div>
                 </div>
                 <table class="table table-bordered table-striped">
@@ -199,8 +231,8 @@
                             <td>{{job.description}}</td>
                             <td>{{job.jobTime | date: 'd MMM @ h:m a'}}</td>
                             <td>{{job.acceptedBy || "None"}}</td>
-                            <td class="text-center"><p><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                            <td class="text-center"><p><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+                            <td class="text-center"><p><button class="btn btn-primary btn-xs" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
+                            <td class="text-center"><p><button class="btn btn-danger btn-xs" ng-click="trash(job)"><span class="glyphicon glyphicon-trash"></span></button></p></td>
                         </tr>
 
                     </tbody>
@@ -225,31 +257,26 @@
                                 <div class="form-group">
                                     <label class="control-label" for="description">Description</label>
                                     <div>
-                                        <input type="text" class="form-control" id="description" placeholder="Enter description" ng-model="job.description">
+                                        <input type="text" class="form-control" id="description" placeholder="Enter description" ng-model="job.description" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label" for="address">Address</label>
                                     <div>
-                                        <input type="text" class="form-control" id="address" placeholder="Enter address" ng-model="job.address">
-                                    </div>
-                                </div>
-                                <!-- <div class="form-group">
-                                    <label class="control-label" for="job-time">Job Time</label>
-                                    <div>
-                                        <input type="datetime-local" class="form-control" id="job-time" placeholder="Enter job time" ng-model="job.jobTime">
+                                        <input type="text" class="form-control" id="address" placeholder="Enter address" ng-model="job.address" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label" for="rendezvous-time">Rendezvous Time</label>
+                                    <label class="control-label" for="job-time">Job Time</label>
                                     <div>
-                                        <input type="datetime-local" class="form-control" id="rendezvous-time" placeholder="Enter time to meet up with helper" ng-model="job.rendevousTime">
+                                        <input type="datetime-local" step="60" class="form-control" id="job-time" placeholder="Enter job time" ng-model="displayJobTime" required>
                                     </div>
-                                </div> -->
+                                </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" ng-click="close(job)" class="btn btn-primary" data-dismiss="modal">Save</button>
+                            <button type="button" ng-click="close(null)" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                 </div>

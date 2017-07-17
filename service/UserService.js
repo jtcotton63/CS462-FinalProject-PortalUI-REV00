@@ -1,6 +1,8 @@
 var http = require('http');
-var serviceBase = 'ec2-34-211-205-116.us-west-2.compute.amazonaws.com';
-var servicePort = 8080;
+//var serviceBase = 'ec2-34-211-205-116.us-west-2.compute.amazonaws.com';
+var serviceBase = 'localhost';
+//var servicePort = 8080;
+var servicePort = 6302;
 
 exports.authenticate = function(req, res, callback) {
     var options = {
