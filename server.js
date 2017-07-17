@@ -79,6 +79,13 @@ router.post('/services/job/jobs', function(req, res) {
     });
 });
 
+router.delete('/services/job/jobs/:jobId', function(req, res) {
+    var jobId = req.params.jobId;
+    jobService.deleteJob(req, res, jobId, function(req, res) {
+       res.status(204).send();
+    });
+});
+
 router.put('/services/job/jobs/:jobId', function(req, res) {
     var jobId = req.params.jobId;
     jobService.updateJob(req, res, jobId, function(req, res, data) {

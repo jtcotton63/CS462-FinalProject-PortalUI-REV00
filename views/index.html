@@ -92,6 +92,18 @@
                         );
                     };
                     
+                    $scope.deleteJob = function(job) {
+                        var path = '/jobs/' + job.id;
+                        $http({
+                            method: 'DELETE',
+                            url: $scope.urlJobSvc + path
+                        }).then(
+                                function success(response) {
+                                    $scope.getJobs(0);
+                                }
+                        );
+                    };
+                    
                     
                     
                     // Modal invocations
@@ -232,7 +244,7 @@
                             <td>{{job.jobTime | date: 'd MMM @ h:m a'}}</td>
                             <td>{{job.acceptedBy || "None"}}</td>
                             <td class="text-center"><p><button class="btn btn-primary btn-xs" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                            <td class="text-center"><p><button class="btn btn-danger btn-xs" ng-click="trash(job)"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+                            <td class="text-center"><p><button class="btn btn-danger btn-xs" ng-click="deleteJob(job)"><span class="glyphicon glyphicon-trash"></span></button></p></td>
                         </tr>
 
                     </tbody>
