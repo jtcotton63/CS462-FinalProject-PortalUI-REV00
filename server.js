@@ -75,7 +75,6 @@ router.get('/users', function(req, res) {
         // Make sure they have admin priviledges
         userService.getUserById(req, res, userIdCookie, function(req, res, user) {
             userService.isAdmin(user, function(result) {
-                console.log(result);
                 if(result === true)
                     res.sendFile(__dirname + '/views/users.html');
                 else
@@ -119,9 +118,28 @@ router.put('/services/job/jobs/:jobId', function(req, res) {
 
 // User service calls
 
+router.get('/services/user/users', function(req, res) {
+    userService.getUsers(req, res, function(req, res, data) {
+       res.json(data);
+    });
+});
+
+router.delete('/services/user/users/:userId', function(req, res) {
+    var userId = req.params.userId;
+    userService.deleteUser(req, res, userId, function(req, res) {
+       res.status(204).send();
+    });
+});
+
 router.get('/services/user/users/:userId', function(req, res) {
     var userId = req.params.userId;
     userService.getUserById(req, res, userId, function(req, res, data) {
+       res.json(data);
+    });
+});
+
+router.get('/services/user/users/roles', function(req, res) {
+    userService.getRoles(req, res, function(req, res, data) {
        res.json(data);
     });
 });

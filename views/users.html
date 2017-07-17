@@ -19,13 +19,12 @@
                 
         <!-- Scripts -->
         <script>
-            var app = angular.module('IndexApp',['ngCookies', 'angularModalService']);
+            var app = angular.module('UsersApp',['ngCookies', 'angularModalService']);
 
     
     
-            app.controller('IndexCtrl', ['$scope', '$http', '$cookies', 'ModalService', function($scope, $http, $cookies, ModalService) {
+            app.controller('UsersCtrl', ['$scope', '$http', '$cookies', 'ModalService', function($scope, $http, $cookies, ModalService) {
                     $scope.urlUserSvc = 'http://localhost:8080/services/user';
-                    $scope.urlJobSvc = 'http://localhost:8080/services/job';
                     
                     $scope.user = null;
                     $scope.getUserDetails = function() {
@@ -43,23 +42,23 @@
                         );
                     };
                     
-                    $scope.jobs = null;
+                    $scope.users = null;
                     $scope.displayIndex = null;
                     $scope.isDisplayLeftArrow = null;
                     $scope.isDisplayRightArrow = null;
                     $scope.contentSize = 2000;
-                    $scope.getJobs = function(index) {
+                    $scope.getUsers = function(index) {
                         var pageIndex = index + 1;
                         $http({
                             method: 'GET',
-                            url: $scope.urlJobSvc + '/jobs?page=' +  pageIndex + '&size=' + $scope.contentSize
+                            url: $scope.urlUserSvc + '/users?page=' +  pageIndex + '&size=' + $scope.contentSize
                         }).then(
                                 function success(response) {
-                                    console.log('Job data received page ' + pageIndex + ' size ' + $scope.contentSize);
+                                    console.log('Users data received page ' + pageIndex + ' size ' + $scope.contentSize);
                                     var data = response.data;
                                     console.log(data);
                                     
-                                    $scope.jobs = data.content;
+                                    $scope.users = data.content;
                                     var tempDisplayNumber = data.number + 1;
                                     $scope.displayIndex = tempDisplayNumber;
                                     $scope.isDisplayLeftArrow = !data.first;
@@ -72,34 +71,34 @@
                     
                     // Resource requests
                     
-                    $scope.createJob = function(newJob) {
-                        $scope.submitJobInformationChange('POST', '/jobs', newJob);
+                    $scope.createUser = function(newUser) {
+                        $scope.submitUserInformationChange('POST', '/users', newUser);
                     };
                     
-                    $scope.updateJob = function(updatedJob) {
-                        $scope.submitJobInformationChange('PUT', '/jobs/' + updatedJob.id, updatedJob);
+                    $scope.updateUser = function(updatedUser) {
+                        $scope.submitUserInformationChange('PUT', '/users/' + updatedUser.id, updatedUser);
                     };
                     
-                    $scope.submitJobInformationChange = function(method, path, job) {
+                    $scope.submitUserInformationChange = function(method, path, job) {
                         $http({
                             method: method,
-                            url: $scope.urlJobSvc + path,
+                            url: $scope.urlUserSvc + path,
                             data: job
                         }).then(
                                 function success(response) {
-                                    $scope.getJobs(0);
+                                    $scope.getUsers(0);
                                 }
                         );
                     };
                     
-                    $scope.deleteJob = function(job) {
-                        var path = '/jobs/' + job.id;
+                    $scope.deleteUser = function(job) {
+                        var path = '/users/' + job.id;
                         $http({
                             method: 'DELETE',
-                            url: $scope.urlJobSvc + path
+                            url: $scope.urlUserSvc + path
                         }).then(
                                 function success(response) {
-                                    $scope.getJobs(0);
+                                    $scope.getUsers(0);
                                 }
                         );
                     };
@@ -109,24 +108,24 @@
                     // Modal invocations
                     
                     $scope.create = function() {
-                        $scope.invokeEditJobModal('Create Job', null, function(result) {
-                            $scope.createJob(result);
+                        $scope.invokeEditUserModal('Create User', null, function(result) {
+                            $scope.createUser(result);
                         });
                     };
                     
-                    $scope.edit = function(job) {
-                        $scope.invokeEditJobModal('Edit Job', job, function(result) {
-                            $scope.updateJob(result);
+                    $scope.edit = function(user) {
+                        $scope.invokeEditUserModal('Edit User', user, function(result) {
+                            $scope.updateUser(result);
                         });
                     };
                     
-                    $scope.invokeEditJobModal = function(title, job, successCb) {
-                        var realJob = job ? job : null;
+                    $scope.invokeEditUserModal = function(title, user, successCb) {
+                        var realUser = user ? user : null;
                         ModalService.showModal({
                             templateUrl: 'edit_modal.html',
                             controller: "EditModalController",
                             inputs: {
-                                job: realJob,
+                                user: realUser,
                                 title: title
                             }
                         }).then(function(modal) {
@@ -136,7 +135,7 @@
                                     console.log(result);
                                     successCb(result);
                                 } else {
-                                    $scope.getJobs(0);
+                                    $scope.getUsers(0);
                                 }
                             });
                         });
@@ -144,28 +143,40 @@
                     
                     angular.element(document).ready(function () {
                         $scope.user = $scope.getUserDetails();
-                        $scope.getJobs(0);
+                        $scope.getUsers(0);
                     });
             }]);
         
         
         
-            app.controller('EditModalController', ['$scope', 'job', 'title', 'close', function($scope, job, title, close) {
-                    // Make date time displayable in modal
-                    $scope.displayJobTime = (job && job.jobTime) ? new Date(job.jobTime) : new Date();
-                    $scope.displayJobTime.setSeconds(0);
-                    $scope.displayJobTime.setMilliseconds(0);
-                    console.log($scope.displayJobTime);        
-            
-                    $scope.job = job;
+            app.controller('EditModalController', ['$scope', '$http', 'user', 'title', 'close', function($scope, $http, user, title, close) {
+                    $scope.urlUserSvc = 'http://localhost:8080/services/user';        
+                    $scope.getRoles = function() {
+                        $http({
+                            method: 'GET',
+                            url: $scope.urlUserSvc + '/users/roles'
+                        }).then(
+                                function success(response) {
+                                    console.log('Roles data received');
+                                    console.log(response.data);
+                                    
+                                    // Set the appropriate display role
+                                    $scope.displayRole = user ? user.role : $scope.roles[1];
+                                    
+                                    // Rtn
+                                    return response.data;
+                                }
+                        );
+                    };
+                    
+                    $scope.roles = $scope.getRoles();
+                    
+                    $scope.user = user;
                     $scope.title = title;
                     
-                    console.log($scope.job);
-                    $scope.close = function(job) {
-                        if(job)
-                            job.jobTime = $scope.displayJobTime.toISOString();
-                        
-                        close(job, 500);
+                    console.log($scope.user);
+                    $scope.close = function(user) {
+                        close(user, 500);
                     };
             }]);
         
@@ -203,7 +214,7 @@
         
         
     </head>
-    <body ng-app="IndexApp" class="container">
+    <body ng-app="UsersApp" class="container">
         
         <nav class="navbar navbar-primary">
             <div class="container-fluid">
@@ -215,7 +226,7 @@
             </div>
         </nav>
         
-        <div ng-controller="IndexCtrl">
+        <div ng-controller="UsersCtrl">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title pull-left">Users</h3>
@@ -226,25 +237,24 @@
                     <thead class="thead-inverse">
                         <tr>
                             <th>ID</th>
-                            <th>Address</th>
-                            <th>Description</th>
-                            <th>Job Time</th>
-                            <th>Accepted By</th>
-                            <th>Edit</th>
+                            <th>Last Name</th>
+                            <th>First Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
 
                     <tbody>
 
-                        <tr ng-repeat="job in jobs">
-                            <td>{{job.id}}</td>
-                            <td>{{job.address}}</td>
-                            <td>{{job.description}}</td>
-                            <td>{{job.jobTime | date: 'd MMM @ h:m a'}}</td>
-                            <td>{{job.acceptedBy || "None"}}</td>
-                            <td class="text-center"><p><button class="btn btn-primary btn-xs" ng-click="edit(job)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                            <td class="text-center"><p><button class="btn btn-danger btn-xs" ng-click="deleteJob(job)"><span class="glyphicon glyphicon-trash"></span></button></p></td>
+                        <tr ng-repeat="user in users">
+                            <td>{{user.id}}</td>
+                            <td>{{user.firstName}}</td>
+                            <td>{{user.lastName}}</td>
+                            <td>{{user.email}}</td>
+                            <td>{{user.role.name}}</td>
+                            <!--<td class="text-center"><p><button class="btn btn-primary btn-xs" ng-click="edit(user)"><span class="glyphicon glyphicon-pencil"></span></button></p></td>-->
+                            <td class="text-center"><p><button class="btn btn-danger btn-xs" ng-click="deleteUser(user)"><span class="glyphicon glyphicon-trash"></span></button></p></td>
                         </tr>
 
                     </tbody>
@@ -267,21 +277,39 @@
                         <div class="modal-body">
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="control-label" for="description">Description</label>
+                                    <label class="control-label" for="firstName">First Name</label>
                                     <div>
-                                        <input type="text" class="form-control" id="description" placeholder="Enter description" ng-model="job.description" required>
+                                        <input type="text" class="form-control" id="firstName" placeholder="Enter first name" ng-model="user.firstName" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label" for="address">Address</label>
+                                    <label class="control-label" for="lastName">Last Name</label>
                                     <div>
-                                        <input type="text" class="form-control" id="address" placeholder="Enter address" ng-model="job.address" required>
+                                        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" ng-model="user.lastName" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label" for="job-time">Job Time</label>
+                                    <label class="control-label" for="Email">Email</label>
                                     <div>
-                                        <input type="datetime-local" step="60" class="form-control" id="job-time" placeholder="Enter job time" ng-model="displayJobTime" required>
+                                        <input type="text" class="form-control" id="email" placeholder="Enter email" ng-model="user.email" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="username">Username</label>
+                                    <div>
+                                        <input type="text" class="form-control" id="username" placeholder="Enter username" ng-model="user.username" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="password">Password</label>
+                                    <div>
+                                        <input type="text" class="form-control" id="password" placeholder="Enter password" ng-model="user.password" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="role">Role</label>
+                                    <div>
+                                        <input type="text" class="form-control" id="role" placeholder="Enter role" ng-model="displayRole.name" required>
                                     </div>
                                 </div>
                             </form>

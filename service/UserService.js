@@ -33,6 +33,55 @@ exports.authenticate = function(req, res, callback) {
     request.end();
 };
 
+exports.getUsers = function(req, res, callback) {
+    var path = '/users?' + qs.stringify(req.query);
+    
+    var options = {
+        host: serviceBase,
+        path: path,
+        port: servicePort,
+        headers: {'Content-Type': 'application/json'}
+    };
+    
+    http.get(options, function(response) {
+        var dataString = '';
+        response.on('data', function(chunk) {
+            dataString += chunk;
+        });
+        response.on('end', function() {
+           var data = JSON.parse(dataString);
+           callback(req, res, data);
+        });
+    });
+};
+
+exports.deleteUser = function(req, res, userId, callback) {
+    var path = '/users/' + userId;
+    
+    var options = {
+        host: serviceBase,
+        path: path,
+        port: servicePort,
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'}
+    };
+    
+    var request = http.request(options, function(response) {
+        var dataString = '';
+        response.on('data', function(chunk) {
+            dataString += chunk;
+        });
+        response.on('end', function() {
+           callback(req, res);
+        });
+    });
+    
+    var requestBody = {};
+    
+    request.write(JSON.stringify(requestBody));
+    request.end();
+};
+
 exports.getUserById = function(req, res, userId, callback) {
     var options = {
         host: serviceBase,
@@ -63,4 +112,26 @@ exports.isAdmin = function(user, callback) {
     
     else
         callback(false);
+};
+
+exports.getRoles = function(req, res, callback) {
+    var path = '/users/roles';
+    
+    var options = {
+        host: serviceBase,
+        path: path,
+        port: servicePort,
+        headers: {'Content-Type': 'application/json'}
+    };
+    
+    http.get(options, function(response) {
+        var dataString = '';
+        response.on('data', function(chunk) {
+            dataString += chunk;
+        });
+        response.on('end', function() {
+           var data = JSON.parse(dataString);
+           callback(req, res, data);
+        });
+    });
 };
